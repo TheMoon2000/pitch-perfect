@@ -8,7 +8,17 @@
 import Foundation
 import AVFoundation
 
-func playPureTone(frequencyInHz: Float, amplitude: Float, durationInMillis: Int, completion: @escaping ()->Void) {
+enum Piano {
+    
+    static func getKeyName(_ keyNumber: Int) -> String {
+        let octave = keyNumber < 4 ? 0 : 1 + (keyNumber - 4) / 12
+        let note = ["A", "A♯/B♭", "B", "C", "C♯/D♭", "D", "D♯/E♭", "E", "F", "F♯/G♭", "G", "G♯/A♭"][(keyNumber - 1) % 12]
+        return "\(note) \(octave)"
+    }
+}
+
+
+func playPureTone(frequencyInHz: Float, amplitude: Float, durationInMillis: Int, completion: @escaping ()->Void, triangle: Bool = false) {
     //Use a semaphore to block until the tone completes playing
     let semaphore = DispatchSemaphore(value: 1)
     //Run async in the background so as not to block the current thread
@@ -41,11 +51,20 @@ func playPureTone(frequencyInHz: Float, amplitude: Float, durationInMillis: Int,
         let angularFrequency = Float(frequencyInHz * 2) * .pi
         // Generate and store the sequential samples representing the sine wave of the tone
         for i in 0 ..< Int(numberOfSamples) {
-            let waveComponent = abs(Float(i).remainder(dividingBy: sampleRateHz / Float(frequencyInHz)) - amplitude / 4) - 0.25
-//            let waveComponent = sinf(Float(i) * angularFrequency / sampleRateHz)
-//            floats[i] = waveComponent * amplitude
-            floats[i] = waveComponent
+            if triangle {
+                let waveComponent = abs(Float(i).remainder(dividingBy: sampleRateHz / Float(frequencyInHz)) - amplitude / 2)
+                floats[i] = waveComponent
+            } else {
+                let waveComponent = sinf(Float(i) * angularFrequency / sampleRateHz)
+                floats[i] = waveComponent * amplitude                
+            }
         }
+        
+        // Smoothing
+        for i in 1...8 {
+            floats[Int(numberOfSamples) - i] /= Float(i) + 1
+        }
+        
         do {
             try audioEngine.start()
         }
