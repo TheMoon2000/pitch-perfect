@@ -10,6 +10,7 @@ import UIKit
 class LevelCell: UITableViewCell {
 
     private(set) var level: Int = 0
+    private(set) var prefix: String!
     private var bgView: UIView!
     private var titleLabel: UILabel!
     private var diffBackground: UIView!
@@ -19,9 +20,10 @@ class LevelCell: UITableViewCell {
         super.init(coder: coder)
     }
     
-    required init(level: Int) {
+    required init(level: Int, prefix: String = "") {
         super.init(style: .default, reuseIdentifier: nil)
         self.level = level
+        self.prefix = prefix
         selectionStyle = .none
         backgroundColor = .clear
         
@@ -71,7 +73,7 @@ class LevelCell: UITableViewCell {
         
         diffLabel = {
             let label = UILabel()
-            label.text = "\(round(LEVELS[level - 1] * 10000) / 100)%"
+            label.text = "\(prefix)\(round(LEVELS[level - 1] * 10000) / 100)%"
             label.font = .systemFont(ofSize: 17, weight: .bold)
             label.textColor = Colors.theme
             label.translatesAutoresizingMaskIntoConstraints = false

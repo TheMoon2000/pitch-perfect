@@ -7,21 +7,27 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CC2DCCEB29AC831800EB4CEE /* ApproximationTestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC2DCCEA29AC831800EB4CEE /* ApproximationTestViewController.swift */; };
+		CC2DCCF029AC83C500EB4CEE /* PitchSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC2DCCEF29AC83C500EB4CEE /* PitchSlider.swift */; };
 		CC7A7BED299A648600AFE0CD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC7A7BEC299A648600AFE0CD /* AppDelegate.swift */; };
 		CC7A7BF4299A648600AFE0CD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CC7A7BF2299A648600AFE0CD /* Main.storyboard */; };
 		CC7A7BF6299A648800AFE0CD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CC7A7BF5299A648800AFE0CD /* Assets.xcassets */; };
 		CC7A7BF9299A648800AFE0CD /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CC7A7BF7299A648800AFE0CD /* LaunchScreen.storyboard */; };
 		CC7A7C03299A64B900AFE0CD /* Pure Tone.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC7A7C02299A64B900AFE0CD /* Pure Tone.swift */; };
+		CC956F5029AC80E600EFF3E9 /* ApproximationTestMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC956F4F29AC80E600EFF3E9 /* ApproximationTestMenuViewController.swift */; };
+		CC956F5329AC812400EFF3E9 /* TabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC956F5229AC812400EFF3E9 /* TabBarController.swift */; };
 		CCCE8A50299F3D3400B6F8B4 /* Notes in Resources */ = {isa = PBXBuildFile; fileRef = CCCE8A4F299F3D3400B6F8B4 /* Notes */; };
 		CCCE8A53299F44D000B6F8B4 /* Bar.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCCE8A52299F44D000B6F8B4 /* Bar.swift */; };
 		CCCE8A56299F451400B6F8B4 /* Global Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCCE8A55299F451400B6F8B4 /* Global Constants.swift */; };
-		CCCE8A59299F466600B6F8B4 /* TestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCCE8A58299F466600B6F8B4 /* TestViewController.swift */; };
-		CCCE8A5C299F476400B6F8B4 /* HomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCCE8A5B299F476400B6F8B4 /* HomeViewController.swift */; };
+		CCCE8A59299F466600B6F8B4 /* NoteTestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCCE8A58299F466600B6F8B4 /* NoteTestViewController.swift */; };
+		CCCE8A5C299F476400B6F8B4 /* NoteTestMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCCE8A5B299F476400B6F8B4 /* NoteTestMenuViewController.swift */; };
 		CCCE8A5F299F47DA00B6F8B4 /* HomeNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCCE8A5E299F47DA00B6F8B4 /* HomeNavigationController.swift */; };
 		CCD5E09829A05B7F00E13AC8 /* LevelCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCD5E09729A05B7F00E13AC8 /* LevelCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		CC2DCCEA29AC831800EB4CEE /* ApproximationTestViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApproximationTestViewController.swift; sourceTree = "<group>"; };
+		CC2DCCEF29AC83C500EB4CEE /* PitchSlider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PitchSlider.swift; sourceTree = "<group>"; };
 		CC7A7BE9299A648600AFE0CD /* Perfect Pitch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Perfect Pitch.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CC7A7BEC299A648600AFE0CD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		CC7A7BF3299A648600AFE0CD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -29,11 +35,13 @@
 		CC7A7BF8299A648800AFE0CD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		CC7A7BFA299A648800AFE0CD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CC7A7C02299A64B900AFE0CD /* Pure Tone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Pure Tone.swift"; sourceTree = "<group>"; };
+		CC956F4F29AC80E600EFF3E9 /* ApproximationTestMenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApproximationTestMenuViewController.swift; sourceTree = "<group>"; };
+		CC956F5229AC812400EFF3E9 /* TabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarController.swift; sourceTree = "<group>"; };
 		CCCE8A4F299F3D3400B6F8B4 /* Notes */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Notes; sourceTree = "<group>"; };
 		CCCE8A52299F44D000B6F8B4 /* Bar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Bar.swift; sourceTree = "<group>"; };
 		CCCE8A55299F451400B6F8B4 /* Global Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Global Constants.swift"; sourceTree = "<group>"; };
-		CCCE8A58299F466600B6F8B4 /* TestViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestViewController.swift; sourceTree = "<group>"; };
-		CCCE8A5B299F476400B6F8B4 /* HomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewController.swift; sourceTree = "<group>"; };
+		CCCE8A58299F466600B6F8B4 /* NoteTestViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTestViewController.swift; sourceTree = "<group>"; };
+		CCCE8A5B299F476400B6F8B4 /* NoteTestMenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteTestMenuViewController.swift; sourceTree = "<group>"; };
 		CCCE8A5E299F47DA00B6F8B4 /* HomeNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeNavigationController.swift; sourceTree = "<group>"; };
 		CCD5E09729A05B7F00E13AC8 /* LevelCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -49,6 +57,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		CC2DCCED29AC83B000EB4CEE /* UI elements */ = {
+			isa = PBXGroup;
+			children = (
+				CCCE8A52299F44D000B6F8B4 /* Bar.swift */,
+				CC2DCCEF29AC83C500EB4CEE /* PitchSlider.swift */,
+			);
+			path = "UI elements";
+			sourceTree = "<group>";
+		};
 		CC7A7BE0299A648600AFE0CD = {
 			isa = PBXGroup;
 			children = (
@@ -70,13 +87,16 @@
 			isa = PBXGroup;
 			children = (
 				CC7A7BEC299A648600AFE0CD /* AppDelegate.swift */,
+				CC956F5229AC812400EFF3E9 /* TabBarController.swift */,
 				CCCE8A55299F451400B6F8B4 /* Global Constants.swift */,
 				CCCE8A5E299F47DA00B6F8B4 /* HomeNavigationController.swift */,
-				CCCE8A5B299F476400B6F8B4 /* HomeViewController.swift */,
+				CCCE8A5B299F476400B6F8B4 /* NoteTestMenuViewController.swift */,
 				CCD5E09729A05B7F00E13AC8 /* LevelCell.swift */,
-				CCCE8A58299F466600B6F8B4 /* TestViewController.swift */,
+				CCCE8A58299F466600B6F8B4 /* NoteTestViewController.swift */,
+				CC956F4F29AC80E600EFF3E9 /* ApproximationTestMenuViewController.swift */,
+				CC2DCCEA29AC831800EB4CEE /* ApproximationTestViewController.swift */,
 				CC7A7C02299A64B900AFE0CD /* Pure Tone.swift */,
-				CCCE8A52299F44D000B6F8B4 /* Bar.swift */,
+				CC2DCCED29AC83B000EB4CEE /* UI elements */,
 				CC7A7BF2299A648600AFE0CD /* Main.storyboard */,
 				CC7A7BF5299A648800AFE0CD /* Assets.xcassets */,
 				CC7A7BF7299A648800AFE0CD /* LaunchScreen.storyboard */,
@@ -159,9 +179,13 @@
 				CCCE8A53299F44D000B6F8B4 /* Bar.swift in Sources */,
 				CC7A7BED299A648600AFE0CD /* AppDelegate.swift in Sources */,
 				CCD5E09829A05B7F00E13AC8 /* LevelCell.swift in Sources */,
+				CC2DCCEB29AC831800EB4CEE /* ApproximationTestViewController.swift in Sources */,
+				CC956F5329AC812400EFF3E9 /* TabBarController.swift in Sources */,
 				CC7A7C03299A64B900AFE0CD /* Pure Tone.swift in Sources */,
-				CCCE8A59299F466600B6F8B4 /* TestViewController.swift in Sources */,
-				CCCE8A5C299F476400B6F8B4 /* HomeViewController.swift in Sources */,
+				CCCE8A59299F466600B6F8B4 /* NoteTestViewController.swift in Sources */,
+				CC2DCCF029AC83C500EB4CEE /* PitchSlider.swift in Sources */,
+				CC956F5029AC80E600EFF3E9 /* ApproximationTestMenuViewController.swift in Sources */,
+				CCCE8A5C299F476400B6F8B4 /* NoteTestMenuViewController.swift in Sources */,
 				CCCE8A5F299F47DA00B6F8B4 /* HomeNavigationController.swift in Sources */,
 				CCCE8A56299F451400B6F8B4 /* Global Constants.swift in Sources */,
 			);
@@ -313,7 +337,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = US8T2D45H8;
 				INFOPLIST_FILE = "Perfect Pitch/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -333,7 +357,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = US8T2D45H8;
 				INFOPLIST_FILE = "Perfect Pitch/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

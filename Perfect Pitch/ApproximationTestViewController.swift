@@ -1,16 +1,35 @@
 //
-//  TestViewController.swift
+//  ApproximationTestViewController.swift
 //  Perfect Pitch
 //
-//  Created by Jia Rui Shan on 2023/2/16.
+//  Created by Jia Rui Shan on 2023/2/26.
 //
 
 import UIKit
 import AVFoundation
 
-class TestViewController: UIViewController {
+class ApproximationTestViewController: UIViewController {
     
-    enum TestState { case ready, chooseAnswer, shouldProceed, shouldEndTest, finished }
+    enum TestState { case ready, adjustAnswer, shouldProceed, shouldEndTest, finished }
+    
+    var pitchDifference = 0.5
+    var currentState: TestState = .ready
+    var totalQuestions = 15
+    var currentQuestion = 0 {
+        didSet {
+            progressText.text = "\(currentQuestion) / \(totalQuestions) (\(numberOfCorrectAnswers) Correct)"
+            if self.currentState == .adjustAnswer {
+                progressBar.percentage = CGFloat(currentQuestion - 1) / CGFloat(totalQuestions)
+            } else {
+                progressBar.percentage = CGFloat(currentQuestion) / CGFloat(totalQuestions)
+            }
+        }
+    }
+    var numberOfCorrectAnswers = 0 {
+        didSet {
+            progressText.text = "\(currentQuestion) / \(totalQuestions) (\(numberOfCorrectAnswers) Correct)"
+        }
+    }
     
     var centerContainer: UIView!
     var centerTitle: UILabel!
@@ -23,47 +42,25 @@ class TestViewController: UIViewController {
     
     var testViewContainer: UIView!
     var questionTitle: UILabel!
-    var buttonGridContainer: UIView!
-    var buttonA: UIButton!
-    var buttonB: UIButton!
-    var buttonC: UIButton!
-    var buttonD: UIButton!
-    var lastTriggeredTime = Date()
-    
-    var currentState = TestState.ready
-    // Which question the user is on
-    var currentQuestion = 0 {
-        didSet {
-            progressText.text = "\(currentQuestion) / \(totalQuestions) (\(numberOfCorrectAnswers) Correct)"
-            if self.currentState == .chooseAnswer {
-                progressBar.percentage = CGFloat(currentQuestion - 1) / CGFloat(totalQuestions)
-            } else {
-                progressBar.percentage = CGFloat(currentQuestion) / CGFloat(totalQuestions)
-            }
-        }
-    }
-    var currentKey: Int!
-    var currentOffsets: [Double]!
-    var currentAnswerIndex: Int?
-    var totalQuestions = 15
-    var numberOfCorrectAnswers = 0 {
-        didSet {
-            progressText.text = "\(currentQuestion) / \(totalQuestions) (\(numberOfCorrectAnswers) Correct)"
-        }
-    }
+    var pitchSlider: PitchSlider!
     
     let engine = AVAudioEngine()
     let audioPlayer = AVAudioPlayerNode()
     let pitchControl = AVAudioUnitTimePitch()
-    var pitchDifference = 0.5
+    var currentKey: Int!
+    
+    var lastNotePlayedTime: Date?
+    var lastTriggeredTime = Date()
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .done, target: self, action: #selector(self.exitTest))
-
         view.backgroundColor = Colors.background
         setupUI()
+        
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .done, target: self, action: #selector(self.exitTest))
+        
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "cursorarrow.motionlines"), style: .plain, target: self, action: #selector(changeSensitivity))
         
         engine.attach(audioPlayer)
         engine.attach(pitchControl)
@@ -71,7 +68,6 @@ class TestViewController: UIViewController {
         engine.connect(pitchControl, to: engine.mainMixerNode, format: nil)
         try! engine.start()
     }
-    
     
     private func setupUI() {
         centerContainer = {
@@ -88,7 +84,7 @@ class TestViewController: UIViewController {
         
         centerTitle = {
             let label = UILabel()
-            label.text = "Pitch Sensitivity Test"
+            label.text = "Note Approximation Test"
             label.numberOfLines = 2
             label.textAlignment = .center
             label.font = .systemFont(ofSize: 28, weight: .semibold)
@@ -103,7 +99,7 @@ class TestViewController: UIViewController {
         
         centerSubtitle = {
             let label = UILabel()
-            label.text = "Frequency Difference: \(round(pitchDifference * 10000) / 100)%"
+            label.text = "Error Tolerance: ±\(round(pitchDifference * 10000) / 100)%"
             label.translatesAutoresizingMaskIntoConstraints = false
             centerContainer.addSubview(label)
             
@@ -168,7 +164,7 @@ class TestViewController: UIViewController {
             bar.translatesAutoresizingMaskIntoConstraints = false
             progressContainer.addSubview(bar)
             
-            bar.topAnchor.constraint(equalTo: progressText.bottomAnchor,constant: 3).isActive = true
+            bar.topAnchor.constraint(equalTo: progressText.bottomAnchor, constant: 3).isActive = true
             bar.leftAnchor.constraint(equalTo: progressContainer.leftAnchor).isActive = true
             bar.rightAnchor.constraint(equalTo: progressContainer.rightAnchor).isActive = true
             bar.bottomAnchor.constraint(equalTo: progressContainer.bottomAnchor).isActive = true
@@ -190,108 +186,71 @@ class TestViewController: UIViewController {
             
             return v
         }()
-
         
         questionTitle = {
             let label = UILabel()
             label.font = .systemFont(ofSize: 25, weight: .medium)
             label.translatesAutoresizingMaskIntoConstraints = false
             testViewContainer.addSubview(label)
-            
-            let helperView = UIView()
-            helperView.translatesAutoresizingMaskIntoConstraints = false
-            testViewContainer.addSubview(helperView)
-            helperView.bottomAnchor.constraint(equalTo: testViewContainer.safeAreaLayoutGuide.centerYAnchor).isActive = true
-            helperView.topAnchor.constraint(equalTo: testViewContainer.safeAreaLayoutGuide.topAnchor).isActive = true
-            
-            label.centerYAnchor.constraint(equalTo: helperView.centerYAnchor).isActive = true
+                        
             label.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor).isActive = true
+            label.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 40).isActive = true
             
             return label
         }()
         
-        buttonGridContainer = {
-            let v = UIView()
+        pitchSlider = {
+            let v = PitchSlider()
+            v.onValueChanged = { newValue in
+                if !self.continueButton.isEnabled {
+                    UIView.transition(with: self.view, duration: 0.2, options: .curveEaseOut) {
+                        self.continueButton.isEnabled = true
+                        self.continueButton.backgroundColor = Colors.theme
+                    }
+                }
+                self.playCurrentNote()
+            }
             v.translatesAutoresizingMaskIntoConstraints = false
             testViewContainer.addSubview(v)
             
-            v.widthAnchor.constraint(equalTo: v.heightAnchor).isActive = true
-            v.centerXAnchor.constraint(equalTo: testViewContainer.safeAreaLayoutGuide.centerXAnchor).isActive = true
-            v.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor, constant: 45).withPriority(.defaultHigh).isActive = true
-            v.bottomAnchor.constraint(equalTo: testViewContainer.safeAreaLayoutGuide.bottomAnchor, constant: -20).isActive = true
-            v.topAnchor.constraint(greaterThanOrEqualTo: questionTitle.bottomAnchor, constant: 5).isActive = true
+            v.widthAnchor.constraint(equalToConstant: 100).isActive = true
+            v.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor).isActive = true
+            v.topAnchor.constraint(equalTo: questionTitle.bottomAnchor, constant: 20).isActive = true
+            v.bottomAnchor.constraint(equalTo: continueButton.topAnchor, constant: -20).isActive = true
             
             return v
         }()
-        
-        buttonA = {
-            let button = UIButton(type: .system)
-            button.setTitle("A", for: .normal)
-            button.translatesAutoresizingMaskIntoConstraints = false
-            testViewContainer.addSubview(button)
-            
-            button.leftAnchor.constraint(equalTo: buttonGridContainer.leftAnchor).isActive = true
-            button.topAnchor.constraint(equalTo: buttonGridContainer.topAnchor).isActive = true
-            button.rightAnchor.constraint(equalTo: buttonGridContainer.centerXAnchor, constant: -10).isActive = true
-            
-            return button
-        }()
-        
-        buttonB = {
-            let button = UIButton(type: .system)
-            button.setTitle("B", for: .normal)
-            button.translatesAutoresizingMaskIntoConstraints = false
-            testViewContainer.addSubview(button)
-            
-            button.topAnchor.constraint(equalTo: buttonGridContainer.topAnchor).isActive = true
-            button.rightAnchor.constraint(equalTo: buttonGridContainer.rightAnchor).isActive = true
-            button.leftAnchor.constraint(equalTo: buttonGridContainer.centerXAnchor, constant: 10).isActive = true
-            
-            return button
-        }()
-        
-        buttonC = {
-            let button = UIButton(type: .system)
-            button.setTitle("C", for: .normal)
-            button.translatesAutoresizingMaskIntoConstraints = false
-            testViewContainer.addSubview(button)
-            
-            button.leftAnchor.constraint(equalTo: buttonGridContainer.leftAnchor).isActive = true
-            button.bottomAnchor.constraint(equalTo: buttonGridContainer.bottomAnchor).isActive = true
-            button.rightAnchor.constraint(equalTo: buttonGridContainer.centerXAnchor, constant: -10).isActive = true
-            
-            return button
-        }()
-        
-        buttonD = {
-            let button = UIButton(type: .system)
-            button.setTitle("D", for: .normal)
-            button.translatesAutoresizingMaskIntoConstraints = false
-            testViewContainer.addSubview(button)
-            
-            button.rightAnchor.constraint(equalTo: buttonGridContainer.rightAnchor).isActive = true
-            button.bottomAnchor.constraint(equalTo: buttonGridContainer.bottomAnchor).isActive = true
-            button.leftAnchor.constraint(equalTo: buttonGridContainer.centerXAnchor, constant: 10).isActive = true
-            
-            return button
-        }()
-        
-        for button in [buttonA, buttonB, buttonC, buttonD] {
-            let button = button!
-            button.layer.borderWidth = 1
-            button.layer.borderColor = Colors.themeLight.cgColor
-            button.layer.cornerRadius = 8
-            button.titleLabel?.font = .systemFont(ofSize: 18, weight: .semibold)
-            button.tintColor = Colors.theme
-            button.widthAnchor.constraint(equalTo: button.heightAnchor).isActive = true
-            
-            button.addTarget(self, action: #selector(makeSelection(_:)), for: .touchUpInside)
-        }
-        
     }
     
     @objc private func exitTest() {
         self.dismiss(animated: true, completion: nil)
+    }
+    
+    private func playCurrentNote() {
+        if lastNotePlayedTime == nil || lastNotePlayedTime!.timeIntervalSinceNow < -1.5 {
+            guard let notePath = Bundle.main.url(forResource: "\(currentKey!)", withExtension: "mp3", subdirectory: "Notes") else {
+                print(currentKey!, "not found!")
+                return
+            }
+            
+            pitchControl.pitch = Float(pitchSlider.freqToProportion(pitchSlider.value) - pitchSlider.freqToProportion(pitchSlider.trueValue)) * Float(pitchDifference) * 200
+            let file = try! AVAudioFile(forReading: notePath)
+            
+            let triggerTime = Date()
+            lastTriggeredTime = triggerTime
+            
+            audioPlayer.stop()
+            audioPlayer.scheduleFile(file, at: nil)
+            audioPlayer.play()
+            
+            Timer.scheduledTimer(withTimeInterval: 4, repeats: false) { _ in
+                if self.lastTriggeredTime == triggerTime {
+                    self.audioPlayer.stop()
+                }
+            }
+            
+            lastNotePlayedTime = Date()
+        }
     }
     
     func nextQuestion() {
@@ -300,25 +259,27 @@ class TestViewController: UIViewController {
         currentQuestion += 1
         questionTitle.text = "Find the Note: \(Piano.getKeyName(self.currentKey!))"
         
-        let correctIndex = Int.random(in: 0..<4)
-        currentOffsets = (0..<4).map { Double($0 - correctIndex) * pitchDifference }
-        
+        pitchSlider.trueValue = 27.5 * pow(2, CGFloat(currentKey) / 12)
+        let randomInitialLocation = CGFloat.random(in: 0...2)
+        pitchSlider.minimumValue = pitchSlider.trueValue / pow(2, randomInitialLocation / 12)
+        pitchSlider.maximumValue = pitchSlider.trueValue * pow(2, (2 - randomInitialLocation) / 12)
+        pitchSlider.errorRange = pow(2, CGFloat(pitchDifference / 2) / 12) - 1
+        pitchSlider.value = pitchSlider.proportionToFreq(0.5)
+        pitchSlider.showSolution = false
+                
         UIView.transition(with: view, duration: 0.2, options: .curveEaseOut) {
-            for button in [self.buttonA, self.buttonB, self.buttonC, self.buttonD] {
-                button?.backgroundColor = nil
-                button?.setTitleColor(Colors.theme, for: .normal)
-            }
             self.continueButton.isEnabled = false
             self.continueButton.backgroundColor = Colors.themeDisabled
         }
+        
     }
     
     @objc private func continueButtonPressed() {
         switch currentState {
         case .ready:
-            currentState = .chooseAnswer
-            continueButton.setTitle("Confirm Selection", for: .normal)
             nextQuestion()
+            currentState = .adjustAnswer
+            continueButton.setTitle("Confirm Note", for: .normal)
             
             UIView.transition(with: view, duration: 0.25, options: .curveEaseOut, animations: {
                 self.centerContainer.alpha = 0
@@ -326,29 +287,17 @@ class TestViewController: UIViewController {
                 self.testViewContainer.alpha = 1
                 self.continueButton.isEnabled = false
             })
-            
-        case .chooseAnswer:
+        case .adjustAnswer:
+            pitchSlider.showSolution = true
             currentState = currentQuestion < totalQuestions ? .shouldProceed : .shouldEndTest
             continueButton.setTitle("Next Question", for: .normal)
             
-            if let i = currentAnswerIndex {
-                if currentOffsets[i] == 0 {
-                    UIView.animate(withDuration: 0.25) {
-                        [self.buttonA, self.buttonB, self.buttonC, self.buttonD][i]?.backgroundColor = Colors.correct
-                    }
-                    numberOfCorrectAnswers += 1
-                } else {
-                    [self.buttonA, self.buttonB, self.buttonC, self.buttonD][i]?.backgroundColor = Colors.incorrect
-                    if let correctIndex = currentOffsets.firstIndex(of: 0.0) {
-                        let correctButton = [self.buttonA, self.buttonB, self.buttonC, self.buttonD][correctIndex]
-                        correctButton?.backgroundColor = Colors.correct
-                        correctButton?.setTitleColor(.white, for: .normal)
-                    }
-                }
+            if pitchSlider.isValueCorrect {
+                numberOfCorrectAnswers += 1
             }
         case .shouldProceed:
             nextQuestion()
-            currentState = .chooseAnswer
+            currentState = .adjustAnswer
             continueButton.setTitle("Confirm Selection", for: .normal)
         case .shouldEndTest:
             currentState = .finished
@@ -360,54 +309,22 @@ class TestViewController: UIViewController {
                 self.progressContainer.alpha = 0
             })
             continueButton.setTitle("Exit Test", for: .normal)
+        case .finished:
+            dismiss(animated: true)
         default:
-            dismiss(animated: true, completion: nil)
+            break
         }
     }
     
-    @objc private func makeSelection(_ sender: UIButton) {
-        let answerIndex = ["A", "B", "C", "D"].firstIndex(of: sender.title(for: .normal))!
-        
-        guard let notePath = Bundle.main.url(forResource: "\(currentKey!)", withExtension: "mp3", subdirectory: "Notes") else {
-            print(currentKey, "not found!")
-            return
+    @objc private func changeSensitivity() {
+        let alert = UIAlertController(title: "Change Sensitivity", message: nil, preferredStyle: .actionSheet)
+        for level in [15, 25, 50, 75, 100] {
+            let sensitivity = CGFloat(level) / 100
+            alert.addAction(UIAlertAction(title: "\(level)%" + (sensitivity == pitchSlider.sensitivity ? " (current)" : ""), style: .default, handler: { _ in
+                self.pitchSlider.sensitivity = sensitivity
+            }))
         }
-        
-        if currentState == .chooseAnswer {
-            currentAnswerIndex = answerIndex
-            UIView.animate(withDuration: 0.2) {
-                self.continueButton.isEnabled = true
-                self.continueButton.backgroundColor = Colors.theme
-            }
-            
-            for button in [buttonA, buttonB, buttonC, buttonD] {
-                if button == sender {
-                    UIView.transition(with: button!, duration: 0.2, options: .curveEaseOut) {
-                        button?.backgroundColor = Colors.theme
-                        button?.setTitleColor(.white, for: .normal)
-                    }
-                } else {
-                    UIView.transition(with: button!, duration: 0.2, options: .curveEaseOut) {
-                        button?.backgroundColor = nil
-                        button?.setTitleColor(Colors.theme, for: .normal)
-                    }
-                }
-            }
-        }
-        
-        let triggerTime = Date()
-        lastTriggeredTime = triggerTime
-        pitchControl.pitch = Float(currentOffsets[answerIndex] * 100)
-        let file = try! AVAudioFile(forReading: notePath)
-        
-        audioPlayer.stop()
-        audioPlayer.scheduleFile(file, at: nil)
-        audioPlayer.play()
-        
-        Timer.scheduledTimer(withTimeInterval: 4, repeats: false) { _ in
-            if self.lastTriggeredTime == triggerTime {
-                self.audioPlayer.stop()
-            }
-        }
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        present(alert, animated: true)
     }
 }

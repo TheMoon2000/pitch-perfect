@@ -15,6 +15,7 @@ enum Colors {
     static let correct = UIColor(named: "Correct")!
     static let incorrect = UIColor(named: "Incorrect")!
     static let trackColor = UIColor(named: "Track color")!
+    static let pitchRange = UIColor(named: "Pitch range")!
     static let tableBG = UIColor(named: "Table bg")!
     static let cellBG = UIColor(named: "Cell bg")!
     static let cellPressed = UIColor(named: "Cell pressed")!

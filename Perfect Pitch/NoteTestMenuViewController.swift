@@ -7,7 +7,7 @@
 
 import UIKit
 
-class HomeViewController: UIViewController {
+class NoteTestMenuViewController: UIViewController {
     
     weak var menuTable: UITableView!
 
@@ -15,7 +15,7 @@ class HomeViewController: UIViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        title = "Pitch Perfect"
+        title = "Pitch Sensitivity Test"
         view.tintColor = Colors.theme
         
         setupUI()
@@ -44,7 +44,7 @@ class HomeViewController: UIViewController {
     }
 }
 
-extension HomeViewController: UITableViewDataSource, UITableViewDelegate {
+extension NoteTestMenuViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return LEVELS.count
     }
@@ -57,7 +57,7 @@ extension HomeViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         
-        let vc = TestViewController()
+        let vc = NoteTestViewController()
         vc.pitchDifference = LEVELS[indexPath.row]
         vc.title = "Pitch Sensitivity Level \(indexPath.row + 1) - \(round(vc.pitchDifference * 10000) / 100)%"
         let nvc = UINavigationController(rootViewController: vc)
